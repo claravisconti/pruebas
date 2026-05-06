@@ -42,6 +42,7 @@ function App() {
   //POST
 
   const [form, setForm] = useState({})
+  const [isVisibleNewProduct, setIsVisibleNewProduct] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,6 +70,7 @@ function App() {
 
       const data = await res.json();
       console.log("Producto creado:", data);
+      setIsVisibleNewProduct(false);
 
       // opcional: limpiar formulario
       setForm({
@@ -153,12 +155,21 @@ function App() {
       <h1 className="text-3xl font-bold mb-6">Productos</h1>
 
       {/* SEARCH */}
-      <input
-        type='text'
-        value={name}
-        onChange={(e) => {setName(e.target.value);setPage(0)}}
-        className='bg-white text-black border-2 my-4 p-1'
-      />
+      <div className='flex justify-between my-4'>
+        <input
+          type='text'
+          value={name}
+          onChange={(e) => { setName(e.target.value); setPage(0) }}
+          className='bg-white text-black border-2 p-1'
+        />
+
+        <div
+          onClick={() => setIsVisibleNewProduct(true)}
+          className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600 h-8"
+        >
+          Nuevo
+        </div>
+      </div>
 
       <div className="grid gap-4 mb-6">
         {products.map((product) => (
@@ -191,6 +202,8 @@ function App() {
         ))}
       </div>
 
+
+
       {/* Pagination */}
       <div className="flex items-center gap-4 mb-8">
         <button
@@ -203,7 +216,7 @@ function App() {
         {
           Array.from({ length: Math.ceil(total / numberPerPage) }, (_, i) => i + 1).map((i) => {
             return (
-              <div onClick={() => setPage(i - 1)} className={`cursor-pointer text-md ${ page==i-1 ? 'font-bold' : ''}`}>
+              <div onClick={() => setPage(i - 1)} className={`cursor-pointer text-md ${page == i - 1 ? 'font-bold' : ''}`}>
                 {i}
               </div>
             )
@@ -236,53 +249,54 @@ function App() {
         </div>
       </div>
 
-
-
       {/* POST */}
-      <div className="bg-white p-4 rounded-xl shadow mb-6 max-w-md">
-        <h3 className="text-xl font-semibold mb-4">Nuevo</h3>
+      {isVisibleNewProduct && (
+        <div className="bg-white p-4 rounded-xl shadow mb-6 max-w-md">
+          <h3 className="text-xl font-semibold mb-4">Nuevo</h3>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium">Nombre</label>
-            <input
-              type="text"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              className="w-full border rounded px-2 py-1"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium">Nombre</label>
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                className="w-full border rounded px-2 py-1"
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium">Descripción</label>
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              className="w-full border rounded px-2 py-1"
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium">Descripción</label>
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                className="w-full border rounded px-2 py-1"
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium">Precio</label>
-            <input
-              type="number"
-              name="price"
-              value={form.price}
-              onChange={handleChange}
-              className="w-full border rounded px-2 py-1"
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium">Precio</label>
+              <input
+                type="number"
+                name="price"
+                value={form.price}
+                onChange={handleChange}
+                className="w-full border rounded px-2 py-1"
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
-          >
-            Guardar
-          </button>
-        </form>
-      </div>
+            <button
+              type="submit"
+              className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+            >
+              Guardar
+            </button>
+          </form>
+        </div>
+      )
+      }
 
       {/* PUT */}
       {isVisible && (
