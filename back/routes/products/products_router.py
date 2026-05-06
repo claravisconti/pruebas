@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
-from fastapi.responses import Response
+from fastapi.responses import Response, JSONResponse
 from sqlalchemy.orm import Session
 from config.config import get_db
-from .products_schema import ProductIn, PaginationParams, ProductPaginatedResponse, ProductFilters
+from .products_schema import ProductIn, PaginationParams, ProductPaginatedResponse, ProductFilters, ProductOut
 from .products_domain import list, create, delete, put
 from utils.commons import ServiceException
 
@@ -16,12 +16,12 @@ items = []
 # Ruta de ejemplo con parámetro
 @router.get("/")
 def read_item(filter: ProductFilters = Depends(), pagination: PaginationParams = Depends(), db: Session = Depends(get_db)):
-    result, total = list(pagination, db)
-    return Response(ProductPaginatedResponse(
-        data=result,
-        page=pagination.page,
-        total=total
-    ))
+    result, total = list(filter, pagination, db)
+    return JSONResponse({ 
+        "data": [r.to_dict() for r in result],
+        "page": pagination.page,
+        "total": total
+    })
 
 # Ruta POST de ejemplo
 @router.post("/")

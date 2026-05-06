@@ -14,7 +14,7 @@ def apply_filtering(statement, filter: ProductFilters):
 
 def list(filter: ProductFilters, pagination: PaginationParams, db: Session):
     statement_total = select(func.count()).select_from(Product)
-    statement_total = apply_filtering(statement, filter)
+    statement_total = apply_filtering(statement_total, filter)
     total = db.execute(statement_total).scalar()
     statement = select(Product)
     statement = apply_filtering(statement, filter)
