@@ -2,9 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.orders.orders_router import router as OrderRouter
 from routes.products.products_router import router as ProductRouter
+from routes.auth.auth_router import router as AuthRouter
 from config.config import Base, engine
 from models.products import Product
 from models.orders import Order
+from models.users import User
 
 app = FastAPI(
     title="Mi API",
@@ -23,5 +25,6 @@ app.add_middleware(
 
 app.include_router(OrderRouter)
 app.include_router(ProductRouter)
+app.include_router(AuthRouter)
 
 Base.metadata.create_all(bind=engine)

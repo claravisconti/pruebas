@@ -149,8 +149,66 @@ function App() {
       console.error(error);
     }
   };
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [access, setAccess] = useState("")
+
+  const authUser = async () => {
+
+    try {
+      const res = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        throw new Error("Error en la petición");
+      }
+
+      setAccess(document.cookie
+        .split('; ')
+        .find(row => row.startsWith(`access=`))
+        ?.split('=')[1])
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
   return (
-    <div className="min-h-screen bg-slate-100 p-6">
+    <div className="min-h-screen items-center justify-center bg-slate-100">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm space-y-4">
+        <h1 className="text-2xl font-bold text-center">Login</h1>
+
+        <input
+          type="text"
+          placeholder="Usuario"
+          className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value) }}
+        />
+
+        <input
+          type="password"
+          placeholder="Contraseña"
+          className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500"
+          value={password}
+          onChange={(e) => { setPassword(e.target.value) }}
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-700 transition"
+          onClick={authUser}
+        >
+          Enviar
+        </button>
+      </div>
       {/* GET */}
       <h1 className="text-3xl font-bold mb-6">Productos</h1>
 
@@ -163,12 +221,15 @@ function App() {
           className='bg-white text-black border-2 p-1'
         />
 
-        <div
-          onClick={() => setIsVisibleNewProduct(true)}
-          className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600 h-8"
-        >
-          Nuevo
-        </div>
+        {access!="" && (
+          <div
+            onClick={() => setIsVisibleNewProduct(true)}
+            className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600 h-8"
+          >
+            Nuevo
+          </div>
+        )}
+
       </div>
 
       <div className="grid gap-4 mb-6">
@@ -184,20 +245,22 @@ function App() {
               <li><span className="font-semibold">Stock:</span> {product.stock}</li>
             </ul>
 
-            <div className="flex gap-2">
-              <button
-                onClick={() => editProduct(product)}
-                className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
-              >
-                Editar
-              </button>
-              <button
-                onClick={() => deleteProduct(product.id)}
-                className="px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600"
-              >
-                Borrar
-              </button>
-            </div>
+            {access!="" && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => editProduct(product)}
+                  className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => deleteProduct(product.id)}
+                  className="px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600"
+                >
+                  Borrar
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>
